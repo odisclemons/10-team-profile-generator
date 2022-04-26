@@ -21,15 +21,21 @@ header h1 {
 
 #cardContainer {
     padding: 1.5rem;
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
 }
 
 .card {
+    margin: 1rem 0;
     width: 17rem;
     height: auto;
     min-height: 10rem;
     padding: 0;
     border-radius: .25rem;
     overflow: hidden;
+    -webkit-box-shadow: 5px 5px 8px 1px #000000;
+    box-shadow: 5px 5px 8px 1px #000000;
 }
 
 .card-body {
