@@ -1,7 +1,14 @@
 const inq = require('inquirer');
+const fs = require('fs');
+const path = require('path');
+
+const templateFilePath = path.join(__dirname, 'template.html');
+const finalHtmlPath = path.join(__dirname, 'profile.html');
 
 var team = [];
-var positions = ["manager", "engineer", "member"]
+var positions = ["manager", "engineer", "member"];
+
+const seperator = () => console.log("=========================================================")
 
 // returns the html card with each of the provided details filled in
 const cardTemplate = ({ position, name, id, email, officeNumber }) => `
@@ -78,7 +85,7 @@ async function init() {
         //append their team position to their answers object
         team.push({ ...answers, position })
         i++
-        console.log("=========================================================")
+        seperator()
     } while (!done)
 
     // we're done with questions.  now is the time for action
@@ -86,8 +93,27 @@ async function init() {
     generatePage()
 }
 
-const generatePage = () => {
+const generatePage = async () => {
+    // map through each team object and return a card template string, 
+    // then join that array of strings into one long one
+    let finalTeam = team.map(member => cardTemplate(member)).join('')
+    seperator()
 
+    // load contents of the template file
+    let finalHtml = fs.readFileSync(templateFilePath)
+
+    // replace that comented text with the entire string of generated cards
+    finalHtml = finalHtml.replace('<!-- cards go here -->', finalTeam)
+
+    // write the file
+    fs.writeFile(finalHtmlPath, finalHtml, (err) => {
+        if (err) {
+            console.error("Error writing file: " + err)
+            return;
+        }
+
+        console.log("Successfully generated team profile page!\nYour file is saved as \"profile.html.\"")
+    })
 }
 
 
