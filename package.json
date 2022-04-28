@@ -1,4 +1,12 @@
 {
+  "name": "10-team-profile-generator",
+  "version": "1.0.0",
+  "description": "generates an html page of team members",
+  "main": "index.js",
+  "repository": "git@github.com:odisclemons/10-team-profile-generator.git",
+  "author": "Odis Clemons <odis.clemons@gmail.com>",
+  "license": "MIT",
+  "private": false,
   "dependencies": {
     "inquirer": "^8.2.4"
   }
