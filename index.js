@@ -3,19 +3,20 @@ const inq = require('inquirer');
 var team = [];
 var positions = ["manager", "engineer", "member"]
 
-// const cardTemplate = `
+// returns the html card with each of the provided details filled in
+const cardTemplate = ({ position, name, id, email, officeNumber }) => `
 
-// <div class="card">
-//     <div class="card-body">
-//         <h5 class="card-title">${name}<br />Manager</h5>
-//         <div class="card-bottom">
-//             <p>ID: ${id}</p>
-//             <p>Email: <a href="mailto:${email}">${email}</a></p>
-//             <p>Office number: ${officeNumber}</p>
-//         </div>
-//     </div>
-// </div>
-// `;
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">${name}<br />${position}</h5>
+        <div class="card-bottom">
+            <p>ID: ${id}</p>
+            <p>Email: <a href="mailto:${email}">${email}</a></p>
+            <p>Office number: ${officeNumber}</p>
+        </div>
+    </div>
+</div>
+`;
 
 // function to return array of questions. 
 // dynamically insert the position of the team mamber as "position"
@@ -52,9 +53,9 @@ const questions = (position) => {
         name: 'done',
         message: "Done?",
         default: false
-
     }
-    return position === 'member' ? tempQuestions : [...tempQuestions, done]
+
+    return position !== 'member' ? tempQuestions : [...tempQuestions, done]
 }
 
 
@@ -65,15 +66,28 @@ async function init() {
     var done = false;
 
     // loop through and keep asking them details until they tell us stop
+    // p.s. I just realized inquirer can loop questions.  DOH!
     do {
+        // if position is manager or engineer, insert that as their position
+        // else, insert "member" for any time we go past the first 2 
         position = i < 2 ? positions[i] : positions[2]
+
+        // await the answers from their prompts
         let answers = await inq.prompt(questions(position))
         done = answers.done
-        team.push(answers)
-        console.log(answers)
+        //append their team position to their answers object
+        team.push({ ...answers, position })
         i++
+        console.log("=========================================================")
     } while (!done)
-    // console.log(team)
+
+    // we're done with questions.  now is the time for action
+    // we actually make the page here, is what im getting at
+    generatePage()
+}
+
+const generatePage = () => {
+
 }
 
 
