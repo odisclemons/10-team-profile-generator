@@ -1,105 +1,9 @@
 const inq = require('inquirer');
-const fs = require('fs');
-const path = require('path');
-
-const templateFilePath = path.join(__dirname, 'template.html');
-const finalHtmlPath = path.join(__dirname, 'dist', 'profile.html');
+const makeQuestions = require('./src/makeQuestions');
+const generatePage = require('./src/generatePage');
+const { seperator } = require('./src/littleHelpers');
 
 var team = [];
-var icons = { manager: '<i class="fas fa-mug-hot"></i>', engineer: '<i class="fas fa-glasses"></i>', intern: '<i class="fas fa-user-graduate"></i>' }
-
-// capitalize word. take first letter, uppercase it, add the rest of the word starting at pos 1
-const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1)
-
-// make array of words split by space, for each word run capitalize function, then join array back with spaces
-const capitalizeAll = (sentance) => sentance.split(' ').map(word => capitalize(word)).join(' ')
-
-const seperator = () => console.log("=========================================================")
-
-// returns the html card with each of the provided details filled in
-const cardTemplate = ({ position, fullName, id, email, officeNumber, github, school }) => `
-
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">${capitalizeAll(fullName)}<br />${icons[position] + "&nbsp;" + capitalize(position)}</h5>
-        <div class="card-bottom">
-            <p>ID: ${id}</p>
-            <p>Email: <a href="mailto:${email}">${email}</a></p>
-            ${position === 'manager' ? `<p>Office number: ${officeNumber}</p>` : ''}
-            ${position === 'engineer' ? `<p>Github: <a href="https://github.com/${github}" target="_blank">${github}</a></p>` : ''}
-            ${position === 'intern' ? `<p>School: <a href="https://google.com/search?q=${school.replace(" ", "+")}" target="_blank">${capitalizeAll(school)}</a></p>` : ''}
-        </div>
-    </div>
-</div>
-`;
-
-// function to return array of questions. 
-// dynamically insert the position of the team mamber as "position"
-const questions = (position) => {
-
-    // different questions need to be asked to managers vs everybody else
-    const commonQuestions = [
-        {
-            type: 'input',
-            name: 'fullName',
-            message: `Enter ${position === 'manager' ? 'manager' : 'team member'}'s full name.`,
-        },
-        {
-            type: 'input',
-            name: 'id',
-            message: `Enter employee ID.`,
-        },
-        {
-            type: 'input',
-            name: 'email',
-            message: `Enter email address.`,
-        },
-    ]
-
-    const onlyManagers = [{
-        type: 'input',
-        name: 'officeNumber',
-        message: `Enter office number.`,
-    }
-    ]
-
-    const everybodyElse =
-        [
-            {
-                type: 'list',
-                name: 'position',
-                message: `Team member's position?`,
-                choices: [{ name: "engineer", value: "engineer" }, { name: "intern", value: "intern" }]
-            },
-            {
-                type: 'input',
-                name: 'github',
-                message: `Github username.`,
-                when(answers) {
-                    return answers.position === 'engineer'
-                }
-            },
-            {
-                type: 'input',
-                name: 'school',
-                message: `School name`,
-                when(answers) {
-                    return answers.position === 'intern'
-                }
-            },
-            {
-                type: 'confirm',
-                name: 'done',
-                message: "Done?",
-                default: false
-            }
-        ]
-
-    // if user is manager give them common questions and onlyMangers 
-    // otherwise give them the everybodyElse array 
-    return position === 'manager' ? [...commonQuestions, ...onlyManagers] : [...commonQuestions, ...everybodyElse]
-}
-
 
 async function init() {
     var i = 0;
@@ -114,7 +18,7 @@ async function init() {
 
         // await the answers from their prompts
         // on the first loop, pass manager as position.
-        let answers = await inq.prompt(questions(i === 0 ? 'manager' : ''))
+        let answers = await inq.prompt(makeQuestions(i === 0 ? 'manager' : ''))
 
         // if they're a manager, add this key manually since it wont be set by inquirer
         if (i === 0) answers.position = 'manager';
@@ -128,38 +32,7 @@ async function init() {
 
     // we're done with questions.  now is the time for action
     // we actually make the page here, is what im getting at
-    generatePage()
+    generatePage(team)
 }
-
-const generatePage = async () => {
-    // map through each team object and return a card template string, 
-    // then join that array of strings into one long one
-    let finalTeam = team.map(member => cardTemplate(member)).join('')
-    seperator()
-
-    // load contents of the template file
-    try {
-        var finalHtml = await fs.readFileSync(templateFilePath, 'utf-8')
-    }
-    catch (err) {
-        console.error("Error reading from file: " + err)
-        process.exit()
-    }
-
-    // replace that comented text with the entire string of generated cards
-    finalHtml = finalHtml.replace('<!-- cards go here -->', finalTeam)
-
-    // write the file
-    fs.writeFile(finalHtmlPath, finalHtml, (err) => {
-        if (err) {
-            console.error("Error writing file: " + err)
-
-            return;
-        }
-
-        console.log("Successfully generated team profile page!\nYour file is saved as \"profile.html.\"")
-    })
-}
-
 
 init()
