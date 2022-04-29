@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const templateFilePath = path.join(__dirname, 'template.html');
-const finalHtmlPath = path.join(__dirname, 'profile.html');
+const finalHtmlPath = path.join(__dirname, 'dist', 'profile.html');
 
 var team = [];
 var icons = { manager: '<i class="fas fa-mug-hot"></i>', engineer: '<i class="fas fa-glasses"></i>', intern: '<i class="fas fa-user-graduate"></i>' }
@@ -17,11 +17,11 @@ const capitalizeAll = (sentance) => sentance.split(' ').map(word => capitalize(w
 const seperator = () => console.log("=========================================================")
 
 // returns the html card with each of the provided details filled in
-const cardTemplate = ({ position, name, id, email, officeNumber, github, school }) => `
+const cardTemplate = ({ position, fullName, id, email, officeNumber, github, school }) => `
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">${capitalizeAll(name)}<br />${icons[position] + "&nbsp;" + capitalize(position)}</h5>
+        <h5 class="card-title">${capitalizeAll(fullName)}<br />${icons[position] + "&nbsp;" + capitalize(position)}</h5>
         <div class="card-bottom">
             <p>ID: ${id}</p>
             <p>Email: <a href="mailto:${email}">${email}</a></p>
@@ -41,7 +41,7 @@ const questions = (position) => {
     const commonQuestions = [
         {
             type: 'input',
-            name: 'name',
+            name: 'fullName',
             message: `Enter ${position === 'manager' ? 'manager' : 'team member'}'s full name.`,
         },
         {
