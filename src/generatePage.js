@@ -5,8 +5,8 @@ const path = require('path');
 const cardTemplate = require('./cardTemplate');
 const { seperator } = require('../src/littleHelpers');
 
-const templateFilePath = path.join(__dirname, 'src', 'template.html');
-const finalHtmlPath = path.join(__dirname, 'dist', 'profile.html');
+const templateFilePath = path.join('src', 'template.html');
+const finalHtmlPath = path.join('dist', 'profile.html');
 
 const generatePage = async (team) => {
     // map through each team object and return a card template string, 
