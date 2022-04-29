@@ -8,8 +8,11 @@ const finalHtmlPath = path.join(__dirname, 'profile.html');
 var team = [];
 var icons = { manager: '<i class="fas fa-mug-hot"></i>', engineer: '<i class="fas fa-glasses"></i>', intern: '<i class="fas fa-user-graduate"></i>' }
 
-// 1-liner to capitalize words
+// capitalize word. take first letter, uppercase it, add the rest of the word starting at pos 1
 const capitalize = (word) => word.charAt(0).toUpperCase() + word.slice(1)
+
+// make array of words split by space, for each word run capitalize function, then join array back with spaces
+const capitalizeAll = (sentance) => sentance.split(' ').map(word => capitalize(word)).join(' ')
 
 const seperator = () => console.log("=========================================================")
 
@@ -18,13 +21,13 @@ const cardTemplate = ({ position, name, id, email, officeNumber, github, school 
 
 <div class="card">
     <div class="card-body">
-        <h5 class="card-title">${name}<br />${icons[position] + capitalize(position)}</h5>
+        <h5 class="card-title">${capitalizeAll(name)}<br />${icons[position] + "&nbsp;" + capitalize(position)}</h5>
         <div class="card-bottom">
             <p>ID: ${id}</p>
             <p>Email: <a href="mailto:${email}">${email}</a></p>
             ${position === 'manager' ? `<p>Office number: ${officeNumber}</p>` : ''}
             ${position === 'engineer' ? `<p>Github: <a href="https://github.com/${github}" target="_blank">${github}</a></p>` : ''}
-            ${position === 'intern' ? `<p>School: <a href="https://google.com/search?q=${school.replace(" ", "+")} target="_blank">${school}</a></p>` : ''}
+            ${position === 'intern' ? `<p>School: <a href="https://google.com/search?q=${school.replace(" ", "+")}" target="_blank">${capitalizeAll(school)}</a></p>` : ''}
         </div>
     </div>
 </div>
