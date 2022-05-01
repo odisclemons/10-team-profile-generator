@@ -50,6 +50,13 @@ Send me a pull request on github and we will make this profile gereator amazing-
   ## Tests
 ... run the program and if it doesn't error on you, its working. -_-
 
+j/k
+
+You can run:
+>yarn test
+
+and see the fruits of my meticulous test writing prowess.
+
 
 
   ## License
